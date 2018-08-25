@@ -106,5 +106,153 @@ ssh -T git@github.com
 ```
 　　![](picture/2018-08-25-11.55.17.png)
 #三、实战
+##3.1创建本地库
+　　在本地文件夹下面执行git init指令，初始化文件夹，作为本地的一个仓库。
+```
+ wuwcMac 六  8 25 12:03:47 wuwc ~/Practice/quarts$git init
+ Reinitialized existing Git repository in /Users/wuwc/Practice/quarts/.git/
+```
+##3.2创建仓库代名词
+```
+git remote add quarts https://github.com/wuweicai/quarts.git
+```
+　　`quarts`是仓库的代名词，可以随便起名
+##3.3提交文件
+```
+git add .
+git commit -m "V0.2"
+git push quarts master 
+```
+　　![](picture/2018-08-25-6.21.19.png)
+　　![](picture/2018-08-25%20-6.25.47.png)
+　　***若再运行命令：`git remote add quarts https://github.com/wuweicai/quarts.git`，会提示错误`fatal: remote quarts already exists.`
 
+　　做完这些你的文件夹里的内容就可以上传到你的github服务器了。
 
+#附录-常用Git指令
+* 初始化配置
+``` 
+git config --global user.name “XXX"
+git config --global user.email “XXXX"
+```
+* 设置大小写敏感
+``` 
+git config core.ignorecase false
+```
+* 生成密钥
+``` 
+ssh-keygen -t rsa -C “your_email”
+```
+* 将远端代码clone到本地目录
+```
+git clone <远端git> <本地目录>
+```
+　　***这里不需要初始化`git init`
+* 提交修改
+``` 
+git add <文件> // 将有修改的文件添加到本地缓存中 git add . 是添加所有修改
+git commit -m "本次修改信息" // 提交本次修改，一般是在git add之后操作
+git reset . // 撤销add
+git rm --cached . // 撤销add
+```
+* branch相关指令
+``` 
+git branch -d <branch_name> // 删除某个分支
+git branch -D <branch_name> // 强制删除某个分支
+git branch -avv // 查看本地分支与远端分支关系，并且显示分支最新一次提交信息
+git remote show origin // 查看远端分支间关系
+```
+* 切换分支
+```
+git checkout <branch_name>
+```
+* 以当前分支为蓝本新建分支并切换到新分支
+```
+git checkout -b <branch_name>
+```
+* 当前分支合并其他分支
+```
+git merge <branch_name>
+```
+* 远端新建分支，其实就是将本地分支推送至远端
+```
+git push origin <local_branch_name>:<remote_branch_name>
+```
+* 删除远端分支，其实就是推送了一个空的分支到远端覆盖了原来的远端分支
+```
+git push origin :<remote_branch_name>
+```
+* 从远端拉取分支，并建立对应关系
+```
+git checkout -b <local_branch_name> origin/<remote_branch_name>
+// 或者
+git branch —track <local_branch_name> origin/<remote_branch_name>
+```
+* 本地已经存在的分支和远端分支建立对应关系
+```
+git branch —set-upstream <local_branch_name> origin/<remote_branch_name>
+```
+* 添加远端库
+```
+git remote add <远端库代称> <远端库地址>
+git clone <远端库地址> <目录>   //不需要git init
+```
+* 回滚到某一个提交版本
+```
+git reset --hard/soft <commit_id> // 回滚到某一个版本
+git reset --hard/soft HEAD~<num> // 回滚num个提交
+git revert <merge_commit_id> -m number // 撤销某一次merge 
+```
+* 强制远端覆盖本地
+``` 
+git fetch --all
+git reset --hard origin/<remote_branch_name>
+```
+* 提交日志查看方式
+```
+git log -p 每一次提交具体差异
+git log —stat 显示文件修改差异，没显示具体修改
+git log —graph 树形状提交记录，可查看分支合并信息
+```
+* `git pull —rebase`有冲突后，解决冲突，使用 `git add` .然后使用`git rebase --continue`
+
+* 切换到某个分支，将其他分支的某次提交应用到该分支
+```
+git checkout <branch_name>
+git cherry-pick <commit id>
+```
+* 前者表示把到之间(左开右闭，不包含start-commit-id)的提交cherry-pick到当前分支；后者表示把到之间(闭区间，包含start-commit-id)的提交cherry-pick到当前分支。
+```
+git cherry-pick <start-commit-id>..<end-commit-id>
+git cherry-pick <start-commit-id>^..<end-commit-id>
+```
+* tag
+    * 新建tag
+    ``` 
+    git tag <tag_name> //轻量标签
+    git tag -a <tag_name> -m "tag_msg" // 附注标签
+    git tag -a <tag_name> <commint_id> // 给某次提交添加标签
+    ```
+    * 删除tag
+    ``` 
+    git tag -d <tag_name>
+    ```
+    * 查看tag
+    ```
+    git tag // 查看所有tag
+    git show <tag_name> // 查看某条tag
+    ```
+    * 提交到远端
+    ```
+    git push origin <tag_name> // 将某个tag提交到远端
+    git push origin –tags // 将所有tag提交到远端
+    ```
+#结束语
+ 
+　　本篇粗略的介绍了Git的使用，但是对于Git内部的实现和一些具体的使用方法，还是需要自己去深入的了解。关于Git的详细介绍和工作原理，可以查看以下两篇文章。
+ 
+　　[Git教程](http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000)，里面有介绍到Git的工作原理，可以仔细阅读。
+ 
+　　[Git Community Book中文版](http://gitbook.liuhui998.com/index.html) 介绍了Git具体使用，这本书也是关于Git的一本好书。
+ 
+　　[Git练习](http://learngitbranching.js.org/)，实战练习Git的各种指令。
